@@ -1,0 +1,11 @@
+name: ccr
+dependencies:
+  - numpy=1.16.4
+  - tensorflow=1.14.0
+  - pip
+  - pycodestyle=2.5.0 # Used in pre-push hook for format checking.
+  - pylint=2.4.4 # Used in pre-push hook for pylint.
+  - python=3
+  - Pillow
+  - pip:
+    - cairosvg

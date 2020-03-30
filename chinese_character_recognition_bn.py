@@ -18,6 +18,9 @@ ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
 logger.addHandler(ch)
 
+# Delete all flags before declare
+# https://github.com/tensorflow/models/issues/5360
+delattr(tf.app.flags.FLAGS, 'log_dir')
 
 tf.app.flags.DEFINE_boolean('random_flip_up_down', False, "Whether to random flip up down")
 tf.app.flags.DEFINE_boolean('random_brightness', True, "whether to adjust brightness")
@@ -37,7 +40,7 @@ tf.app.flags.DEFINE_string('log_dir', './log', 'the logging dir')
 
 tf.app.flags.DEFINE_boolean('restore', False, 'whether to restore from checkpoint')
 tf.app.flags.DEFINE_boolean('epoch', 1, 'Number of epoches')
-tf.app.flags.DEFINE_boolean('batch_size', 128, 'Validation batch size')
+tf.app.flags.DEFINE_integer('batch_size', 128, 'Validation batch size')
 tf.app.flags.DEFINE_string('mode', 'validation', 'Running mode. One of {"train", "valid", "test"}')
 
 gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
