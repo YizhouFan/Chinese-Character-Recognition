@@ -33,9 +33,9 @@ tf.app.flags.DEFINE_integer('max_steps', 16002, 'the max training steps ')
 tf.app.flags.DEFINE_integer('eval_steps', 100, "the step num to eval")
 tf.app.flags.DEFINE_integer('save_steps', 500, "the steps to save")
 
-tf.app.flags.DEFINE_string('checkpoint_dir', './checkpoint/', 'the checkpoint dir')
-tf.app.flags.DEFINE_string('train_data_dir', '../data/train/', 'the train dataset dir')
-tf.app.flags.DEFINE_string('test_data_dir', '../data/test/', 'the test dataset dir')
+tf.app.flags.DEFINE_string('checkpoint_dir', '../chinese_character_recognition_bn/', 'the checkpoint dir')
+tf.app.flags.DEFINE_string('train_data_dir', '../HWDB1/train/', 'the train dataset dir')
+tf.app.flags.DEFINE_string('test_data_dir', '../HWDB1/test/', 'the test dataset dir')
 tf.app.flags.DEFINE_string('log_dir', './log', 'the logging dir')
 
 tf.app.flags.DEFINE_boolean('restore', False, 'whether to restore from checkpoint')
@@ -96,7 +96,7 @@ def build_graph(top_k):
     images = tf.placeholder(dtype=tf.float32, shape=[None, 64, 64, 1], name='image_batch')
     labels = tf.placeholder(dtype=tf.int64, shape=[None], name='label_batch')
     is_training = tf.placeholder(dtype=tf.bool, shape=[], name='train_flag')
-    with tf.device('/gpu:0'):
+    with tf.device('/cpu:0'):
         with slim.arg_scope([slim.conv2d, slim.fully_connected],
                             normalizer_fn=slim.batch_norm,
                             normalizer_params={'is_training': is_training}):
@@ -152,8 +152,8 @@ def build_graph(top_k):
 
 def train():
     print('Begin training')
-    train_feeder = DataIterator(data_dir='../data/train/')
-    test_feeder = DataIterator(data_dir='../data/test/')
+    train_feeder = DataIterator(data_dir='../HWDB1/train/')
+    test_feeder = DataIterator(data_dir='../HWDB1/test/')
     model_name = 'chinese-rec-model'
     with tf.Session(config=tf.ConfigProto(gpu_options=gpu_options, allow_soft_placement=True)) as sess:
         train_images, train_labels = train_feeder.input_pipeline(batch_size=FLAGS.batch_size, aug=True)
@@ -221,7 +221,7 @@ def train():
 
 def validation():
     print('Begin validation')
-    test_feeder = DataIterator(data_dir='../data/test/')
+    test_feeder = DataIterator(data_dir='../HWDB1/test/')
 
     final_predict_val = []
     final_predict_index = []
@@ -314,7 +314,7 @@ def main(_):
             pickle.dump(dct, f)
         logger.info('Write file ends')
     elif FLAGS.mode == 'inference':
-        image_path = '../data/test/00190/13320.png'
+        image_path = '../HWDB1/test/00190/13320.png'
         final_predict_val, final_predict_index = inference(image_path)
         logger.info('the result info label {0} predict index {1} predict_val {2}'.format(190, final_predict_index,
                                                                                          final_predict_val))
